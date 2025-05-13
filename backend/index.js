@@ -12,7 +12,7 @@ app.use(cors({
   origin: [
     process.env.FRONTEND_URL, 
     'http://localhost:5500',
-    'https://alora2-0-iby4-git-main-dakshs-projects-341d5f95.vercel.app/' // Your Vercel frontend URL
+    'https://alora2-0-iby4.vercel.app/' // Your Vercel frontend URL
   ],
   credentials: true
 }));
