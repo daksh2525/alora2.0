@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop | Alora Luxury Candles</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Offer Banner -->
+    <div class="offer-banner">
+        10% off and Free Delivery on Orders Above ₹2000
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">Alora</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="shop.html">Shop</a></li>
+            <li><a href="index.html#about">About</a></li>
+            <li><a href="index.html#contact">Contact</a></li>
+            <li><a href="cart.html" class="cart-icon"><i class="fas fa-shopping-cart"></i> <span class="cart-count">0</span></a></li>
+        </ul>
+        <div class="hamburger">
+            <i class="fas fa-bars"></i>
+        </div>
+    </nav>
+
+    <!-- Main Shop Content -->
+    <main class="shop-main">
+        <div class="shop-header">
+            <h1>Our Candle Collection</h1>
+            <p>Discover our handcrafted luxury candles for every mood and occasion</p>
+        </div>
+
+        <div class="shop-container">
+            <!-- Sidebar Filters -->
+            <aside class="shop-sidebar">
+                <div class="filter-section">
+                    <h3>Categories</h3>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="checkbox" name="category" value="scented" checked> Scented Candles
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="category" value="unscented" checked> Unscented Candles
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="category" value="seasonal" checked> Seasonal Collection
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="category" value="luxury" checked> Luxury Collection
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3>Price Range</h3>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="radio" name="price" value="all" checked> All Prices
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="price" value="0-1000"> Under ₹1000
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="price" value="1000-1500"> ₹1000 - ₹1500
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="price" value="1500-2000"> ₹1500 - ₹2000
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="price" value="2000"> Above ₹2000
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3>Fragrance</h3>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="checkbox" name="fragrance" value="floral" checked> Floral
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="fragrance" value="woody" checked> Woody
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="fragrance" value="citrus" checked> Citrus
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="fragrance" value="spicy" checked> Spicy
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="fragrance" value="fresh" checked> Fresh
+                        </label>
+                    </div>
+                </div>
+
+                <button class="btn" id="apply-filters">Apply Filters</button>
+                <button class="btn btn-secondary" id="reset-filters">Reset Filters</button>
+            </aside>
+
+            <!-- Product Grid -->
+            <section class="shop-products">
+                <div class="sort-options">
+                    <label for="sort-by">Sort by:</label>
+                    <select id="sort-by">
+                        <option value="default">Default</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="name-asc">Name: A-Z</option>
+                        <option value="name-desc">Name: Z-A</option>
+                    </select>
+                </div>
+
+                <div class="products-grid" id="all-products">
+                    <!-- Products will be loaded here by JavaScript -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-about">
+                <div class="footer-logo">Alora</div>
+                <p>Crafting luxury candles that illuminate your life with warmth and elegance since 2018.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-pinterest"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="index.html#about">About Us</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
+                    <li><a href="cart.html">Cart</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>Customer Service</h3>
+                <ul>
+                    <li><a href="#">Shipping Policy</a></li>
+                    <li><a href="#">Returns & Refunds</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-map-marker-alt"></i> 123 Candle Lane, Mumbai</li>
+                    <li><i class="fas fa-phone"></i> +91 9876543210</li>
+                    <li><i class="fas fa-envelope"></i> hello@alora.com</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 Alora Luxury Candles. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/products.js"></script>
+    <script src="js/cart.js"></script>
+    <script>
+        // Mobile Navigation
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            hamburger.innerHTML = navLinks.classList.contains('active') ? 
+                '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        });
+
+        // Update cart count on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCartCount();
+            loadAllProducts();
+            setupFilters();
+        });
+
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+            document.querySelector('.cart-count').textContent = totalItems;
+        }
+
+        function loadAllProducts() {
+            const productsGrid = document.getElementById('all-products');
+            productsGrid.innerHTML = '';
+            
+            // Get filtered and sorted products
+            const filteredProducts = filterProducts();
+            const sortedProducts = sortProducts(filteredProducts);
+            
+            if (sortedProducts.length === 0) {
+                productsGrid.innerHTML = '<p class="no-products">No products match your filters. Please try different criteria.</p>';
+                return;
+            }
+            
+            sortedProducts.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.dataset.price = product.price;
+                productCard.dataset.name = product.name;
+                productCard.dataset.category = product.category;
+                productCard.dataset.fragrance = product.fragrance;
+                
+                productCard.innerHTML = `
+                    <div class="product-image">
+                        <img src="${product.image}" alt="${product.name}">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">${product.name}</h3>
+                        <p class="product-price">₹${product.price.toLocaleString()}</p>
+                        <div class="product-actions">
+                            <button class="btn add-to-cart" 
+                                data-id="${product.id}" 
+                                data-name="${product.name}" 
+                                data-price="${product.price}" 
+                                data-image="${product.image}">
+                                Add to Cart
+                            </button>
+                            <button class="btn btn-secondary quick-view" data-id="${product.id}">
+                                Quick View
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                productsGrid.appendChild(productCard);
+            });
+            
+            // Add event listeners to new buttons
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', addToCart);
+            });
+        }
+
+        function filterProducts() {
+            const categoryFilters = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(el => el.value);
+            const priceFilter = document.querySelector('input[name="price"]:checked').value;
+            const fragranceFilters = Array.from(document.querySelectorAll('input[name="fragrance"]:checked')).map(el => el.value);
+            
+            return window.products.filter(product => {
+                // Category filter
+                if (!categoryFilters.includes(product.category)) return false;
+                
+                // Price filter
+                if (priceFilter !== 'all') {
+                    const [min, max] = priceFilter.split('-').map(Number);
+                    if (max && (product.price < min || product.price > max)) return false;
+                    if (!max && product.price < min) return false;
+                }
+                
+                // Fragrance filter
+                if (!fragranceFilters.includes(product.fragrance)) return false;
+                
+                return true;
+            });
+        }
+
+        function sortProducts(products) {
+            const sortBy = document.getElementById('sort-by').value;
+            
+            return [...products].sort((a, b) => {
+                switch (sortBy) {
+                    case 'price-low':
+                        return a.price - b.price;
+                    case 'price-high':
+                        return b.price - a.price;
+                    case 'name-asc':
+                        return a.name.localeCompare(b.name);
+                    case 'name-desc':
+                        return b.name.localeCompare(a.name);
+                    default:
+                        return 0;
+                }
+            });
+        }
+
+        function setupFilters() {
+            // Apply filters button
+            document.getElementById('apply-filters').addEventListener('click', loadAllProducts);
+            
+            // Reset filters button
+            document.getElementById('reset-filters').addEventListener('click', () => {
+                document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = true;
+                });
+                document.querySelector('input[name="price"][value="all"]').checked = true;
+                document.getElementById('sort-by').value = 'default';
+                loadAllProducts();
+            });
+            
+            // Sort by change
+            document.getElementById('sort-by').addEventListener('change', loadAllProducts);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart | Alora Luxury Candles</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Offer Banner -->
+    <div class="offer-banner">
+        10% off and Free Delivery on Orders Above ₹2000
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">Alora</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="shop.html">Shop</a></li>
+            <li><a href="index.html#about">About</a></li>
+            <li><a href="index.html#contact">Contact</a></li>
+            <li><a href="cart.html" class="cart-icon"><i class="fas fa-shopping-cart"></i> <span class="cart-count">0</span></a></li>
+        </ul>
+        <div class="hamburger">
+            <i class="fas fa-bars"></i>
+        </div>
+    </nav>
+
+    <!-- Cart Main Content -->
+    <main class="cart-main">
+        <div class="cart-header">
+            <h1>Your Shopping Cart</h1>
+            <p>Review your items before checkout</p>
+        </div>
+
+        <div class="cart-container">
+            <div class="cart-items-container" id="cart-items">
+                <!-- Cart items will be loaded here by JavaScript -->
+                <div class="cart-empty">
+                    <i class="fas fa-shopping-cart"></i>
+                    <h3>Your cart is empty</h3>
+                    <p>Looks like you haven't added anything to your cart yet</p>
+                    <a href="shop.html" class="btn">Continue Shopping</a>
+                </div>
+            </div>
+            
+            <div class="cart-summary" id="cart-summary">
+                <h3>Order Summary</h3>
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span class="subtotal">₹0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span class="shipping">Calculated at checkout</span>
+                </div>
+                <div class="summary-row">
+                    <span>Discount</span>
+                    <span class="discount">-₹0</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span class="total-amount">₹0</span>
+                </div>
+                <button class="btn checkout-btn">Proceed to Checkout</button>
+                <p class="continue-shopping">
+                    <a href="shop.html"><i class="fas fa-arrow-left"></i> Continue Shopping</a>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-about">
+                <div class="footer-logo">Alora</div>
+                <p>Crafting luxury candles that illuminate your life with warmth and elegance since 2018.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-pinterest"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="index.html#about">About Us</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
+                    <li><a href="cart.html">Cart</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>Customer Service</h3>
+                <ul>
+                    <li><a href="#">Shipping Policy</a></li>
+                    <li><a href="#">Returns & Refunds</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-map-marker-alt"></i> 123 Candle Lane, Mumbai</li>
+                    <li><i class="fas fa-phone"></i> +91 9876543210</li>
+                    <li><i class="fas fa-envelope"></i> hello@alora.com</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 Alora Luxury Candles. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/cart.js"></script>
+    <script>
+        // Mobile Navigation
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            hamburger.innerHTML = navLinks.classList.contains('active') ? 
+                '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        });
+
+        // Update cart count on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCartCount();
+            loadCartItems();
+        });
+
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+            document.querySelector('.cart-count').textContent = totalItems;
+        }
+
+        function loadCartItems() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartSummary = document.getElementById('cart-summary');
+            
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = `
+                    <div class="cart-empty">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h3>Your cart is empty</h3>
+                        <p>Looks like you haven't added anything to your cart yet</p>
+                        <a href="shop.html" class="btn">Continue Shopping</a>
+                    </div>
+                `;
+                cartSummary.style.display = 'none';
+                return;
+            }
+            
+            // Show cart summary
+            cartSummary.style.display = 'block';
+            
+            // Generate cart items
+            let cartHTML = '';
+            let subtotal = 0;
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                
+                cartHTML += `
+                    <div class="cart-item" data-id="${item.id}">
+                        <img src="${item.image}" alt="${item.name}" class="cart-item-img">
+                        <div class="cart-item-details">
+                            <h4 class="cart-item-name">${item.name}</h4>
+                            <p class="cart-item-price">₹${item.price.toLocaleString()}</p>
+                            <div class="cart-item-quantity">
+                                <button class="quantity-btn decrease" data-id="${item.id}">-</button>
+                                <span class="quantity">${item.quantity}</span>
+                                <button class="quantity-btn increase" data-id="${item.id}">+</button>
+                            </div>
+                            <p class="remove-item" data-id="${item.id}">Remove</p>
+                        </div>
+                        <div class="cart-item-total">
+                            ₹${itemTotal.toLocaleString()}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            cartItemsContainer.innerHTML = cartHTML;
+            
+            // Update summary
+            document.querySelector('.subtotal').textContent = `₹${subtotal.toLocaleString()}`;
+            
+            // Apply discount if applicable
+            let discount = 0;
+            if (subtotal > 2000) {
+                discount = subtotal * 0.1; // 10% discount
+                document.querySelector('.discount').textContent = `-₹${discount.toLocaleString()}`;
+            } else {
+                document.querySelector('.discount').textContent = '-₹0';
+            }
+            
+            const total = subtotal - discount;
+            document.querySelector('.total-amount').textContent = `₹${total.toLocaleString()}`;
+            
+            // Add event listeners
+            document.querySelectorAll('.decrease').forEach(btn => {
+                btn.addEventListener('click', () => updateQuantity(btn.dataset.id, -1));
+            });
+            
+            document.querySelectorAll('.increase').forEach(btn => {
+                btn.addEventListener('click', () => updateQuantity(btn.dataset.id, 1));
+            });
+            
+            document.querySelectorAll('.remove-item').forEach(btn => {
+                btn.addEventListener('click', () => removeItem(btn.dataset.id));
+            });
+            
+            document.querySelector('.checkout-btn').addEventListener('click', checkout);
+        }
+
+        function updateQuantity(productId, change) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const itemIndex = cart.findIndex(item => item.id === productId);
+            
+            if (itemIndex !== -1) {
+                cart[itemIndex].quantity += change;
+                
+                // Remove item if quantity is 0 or less
+                if (cart[itemIndex].quantity <= 0) {
+                    cart.splice(itemIndex, 1);
+                }
+                
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                loadCartItems();
+            }
+        }
+
+        function removeItem(productId) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart = cart.filter(item => item.id !== productId);
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            loadCartItems();
+        }
+
+       function checkout() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+    }
+
+    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const discount = subtotal > 2000 ? subtotal * 0.1 : 0;
+    const finalAmount = subtotal - discount;
+
+    const options = {
+        key: "rzp_live_xnsvqvXT1WqoZ4", // Replace with your Razorpay Test Key
+        amount: finalAmount * 100, // Amount in paise
+        currency: "INR",
+        name: "Alora Luxury Candles",
+        description: "Purchase of candles",
+        image: "https://yourwebsite.com/logo.png", // optional
+        handler: function (response) {
+            alert("Payment successful!\nPayment ID: " + response.razorpay_payment_id);
+            localStorage.removeItem('cart');
+            updateCartCount();
+            loadCartItems();
+        },
+        prefill: {
+            name: "", // Add user name dynamically if logged in
+            email: "", // Add user email dynamically if logged in
+            contact: "" // Add user contact number dynamically if logged in
+        },
+        theme: {
+            color: "#c5a880"
+        },
+        modal: {
+            ondismiss: function () {
+                alert("Payment process was dismissed.");
+            }
+        }
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+}
+
+    </script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+</body>
+</html>
