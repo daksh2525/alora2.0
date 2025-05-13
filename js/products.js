@@ -11,7 +11,7 @@ window.products = [
     {
         id: '2',
         name: 'Floating Candle(Pack Of 6)',
-        price: 199,
+        price: 1,
         image: '/images/4.jpg',
         category: 'scented',
         fragrance: 'floral'
