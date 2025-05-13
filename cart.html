@@ -7,6 +7,68 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Additional styles for checkout form */
+        .checkout-form-container {
+            display: none;
+            margin-top: 40px;
+            padding: 30px;
+            background: #f9f5f0;
+            border-radius: 8px;
+        }
+        
+        .checkout-form-container h2 {
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        #checkout-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        #checkout-form input,
+        #checkout-form textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        #checkout-form textarea {
+            grid-column: span 2;
+            height: 100px;
+        }
+        
+        #checkout-form button[type="submit"] {
+            grid-column: span 2;
+            background: #c5a880;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        #checkout-form button[type="submit"]:hover {
+            background: #b59870;
+        }
+        
+        @media (max-width: 768px) {
+            #checkout-form {
+                grid-template-columns: 1fr;
+            }
+            
+            #checkout-form textarea,
+            #checkout-form button[type="submit"] {
+                grid-column: span 1;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Offer Banner -->
@@ -65,11 +127,24 @@
                     <span>Total</span>
                     <span class="total-amount">₹0</span>
                 </div>
-                <button class="btn checkout-btn">Proceed to Checkout</button>
+                <button class="btn checkout-btn" id="proceed-to-checkout">Proceed to Checkout</button>
                 <p class="continue-shopping">
                     <a href="shop.html"><i class="fas fa-arrow-left"></i> Continue Shopping</a>
                 </p>
             </div>
+        </div>
+        
+        <!-- Checkout Form (hidden by default) -->
+        <div class="checkout-form-container" id="checkout-form-container">
+            <h2>Checkout - Alora Candles</h2>
+            <form id="checkout-form">
+                <input type="text" id="name" placeholder="Name" required />
+                <input type="email" id="email" placeholder="Email" required />
+                <input type="tel" id="phone" placeholder="Phone" required />
+                <textarea id="address" placeholder="Shipping Address" required></textarea>
+                <input type="hidden" id="amount" value="0" />
+                <button type="submit">Pay Now</button>
+            </form>
         </div>
     </main>
 
@@ -120,6 +195,7 @@
     </footer>
 
     <script src="js/cart.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
         // Mobile Navigation
         const hamburger = document.querySelector('.hamburger');
@@ -208,6 +284,7 @@
             
             const total = subtotal - discount;
             document.querySelector('.total-amount').textContent = `₹${total.toLocaleString()}`;
+            document.getElementById('amount').value = total;
             
             // Add event listeners
             document.querySelectorAll('.decrease').forEach(btn => {
@@ -221,8 +298,6 @@
             document.querySelectorAll('.remove-item').forEach(btn => {
                 btn.addEventListener('click', () => removeItem(btn.dataset.id));
             });
-            
-            document.querySelector('.checkout-btn').addEventListener('click', checkout);
         }
 
         function updateQuantity(productId, change) {
@@ -252,51 +327,102 @@
             loadCartItems();
         }
 
-       function checkout() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    if (cart.length === 0) {
-        alert("Your cart is empty!");
-        return;
-    }
-
-    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const discount = subtotal > 2000 ? subtotal * 0.1 : 0;
-    const finalAmount = subtotal - discount;
-
-    const options = {
-        key: "rzp_live_xnsvqvXT1WqoZ4", // Replace with your Razorpay Test Key
-        amount: finalAmount * 100, // Amount in paise
-        currency: "INR",
-        name: "Alora Luxury Candles",
-        description: "Purchase of candles",
-        image: "https://yourwebsite.com/logo.png", // optional
-        handler: function (response) {
-            alert("Payment successful!\nPayment ID: " + response.razorpay_payment_id);
-            localStorage.removeItem('cart');
-            updateCartCount();
-            loadCartItems();
-        },
-        prefill: {
-            name: "", // Add user name dynamically if logged in
-            email: "", // Add user email dynamically if logged in
-            contact: "" // Add user contact number dynamically if logged in
-        },
-        theme: {
-            color: "#c5a880"
-        },
-        modal: {
-            ondismiss: function () {
-                alert("Payment process was dismissed.");
+        // Proceed to Checkout button
+        document.getElementById('proceed-to-checkout').addEventListener('click', function() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            if (cart.length === 0) {
+                alert("Your cart is empty!");
+                return;
             }
-        }
-    };
+            
+            // Hide cart and show checkout form
+            document.querySelector('.cart-container').style.display = 'none';
+            document.getElementById('checkout-form-container').style.display = 'block';
+        });
 
-    const rzp = new Razorpay(options);
-    rzp.open();
-}
+        // Checkout form submission
+        const form = document.getElementById("checkout-form");
 
+        form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const userData = {
+                name: document.getElementById("name").value,
+                email: document.getElementById("email").value,
+                phone: document.getElementById("phone").value,
+                address: document.getElementById("address").value,
+                amount: document.getElementById("amount").value,
+                currency: "INR",
+                cart: JSON.parse(localStorage.getItem('cart')) || []
+            };
+
+            try {
+                // 1. Call backend to create Razorpay order
+                const res = await fetch("http://localhost:3000/create-order", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(userData)
+                });
+
+                const data = await res.json();
+                if (!data.success) throw new Error("Order creation failed");
+
+                // 2. Open Razorpay checkout
+                const options = {
+                    key: "rzp_live_xnsvqvXT1WqoZ4", // Replace with your Razorpay Test Key
+                    amount: data.order.amount,
+                    currency: data.order.currency,
+                    name: "Alora Luxury Candles",
+                    description: "Candle Order",
+                    order_id: data.order.id,
+                    prefill: {
+                        name: userData.name,
+                        email: userData.email,
+                        contact: userData.phone
+                    },
+                    notes: {
+                        address: userData.address,
+                        items: JSON.stringify(userData.cart)
+                    },
+                    handler: function (response) {
+                        alert("Payment Successful!\nPayment ID: " + response.razorpay_payment_id);
+                        
+                        // Clear cart on successful payment
+                        localStorage.removeItem('cart');
+                        updateCartCount();
+                        
+                        // Redirect to thank you page or show success message
+                        window.location.href = "thank-you.html";
+                        
+                        // 3. Send payment success info to backend (store in Firebase)
+                        fetch("http://localhost:3000/payment-success", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                payment_id: response.razorpay_payment_id,
+                                order_id: response.razorpay_order_id,
+                                signature: response.razorpay_signature,
+                                customer: userData,
+                                cart: userData.cart
+                            })
+                        });
+                    },
+                    theme: {
+                        color: "#c5a880"
+                    },
+                    modal: {
+                        ondismiss: function () {
+                            alert("Payment process was dismissed.");
+                        }
+                    }
+                };
+
+                const rzp = new Razorpay(options);
+                rzp.open();
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        });
     </script>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
 </body>
 </html>
