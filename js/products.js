@@ -3,7 +3,7 @@ window.products = [
     {
         id: '1',
         name: 'Cup Cake',
-        price: 199,
+        price: 2,
         image: '/images/1.jpg',
         category: 'scented',
         fragrance: 'floral'

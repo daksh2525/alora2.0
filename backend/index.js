@@ -7,20 +7,35 @@ const path = require('path');
 
 const app = express();
 
-// Middleware Configuration
+// Enhanced CORS configuration
+const allowedOrigins = [
+  'https://alora-luxury-candles.vercel.app',
+  'http://localhost:5500',
+  'https://alora2-0-iby4.vercel.app/',
+  'https://alora2-0-iby4-git-main-dakshs-projects-341d5f95.vercel.app/',
+  'http://localhost:3000'
+];
+
 app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL, 
-    'http://localhost:5500',
-    'https://alora2-0-iby4.vercel.app/' // Your Vercel frontend URL
-  ],
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.urlencoded({ extended: true }));
 
-// Razorpay Initialization
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Initialize Razorpay
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET
@@ -28,50 +43,43 @@ const razorpay = new Razorpay({
 
 // API Routes
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'healthy',
-    timestamp: new Date().toISOString()
+  res.json({ 
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
 // Create Order Endpoint
-app.post('/api/create-order', async (req, res) => {
+app.post('/api/orders', async (req, res) => {
   try {
-    const { amount, currency, notes } = req.body;
+    const { amount, currency = 'INR', receipt, notes } = req.body;
 
-    // Validate request
-    if (!amount || !currency) {
+    // Validate input
+    if (!amount || isNaN(amount) || amount < 1) {
       return res.status(400).json({
         success: false,
-        error: 'Amount and currency are required'
+        error: 'Invalid amount. Minimum is ₹1'
       });
     }
 
-    if (amount < 100) { // Minimum amount check (₹1)
-      return res.status(400).json({
-        success: false,
-        error: 'Amount must be at least ₹1'
-      });
-    }
-
-    const options = {
+    const orderOptions = {
       amount: Math.round(amount * 100), // Convert to paise
-      currency: currency || 'INR',
-      receipt: `order_${crypto.randomBytes(8).toString('hex')}`,
-      payment_capture: 1, // Auto-capture payments
+      currency,
+      receipt: receipt || `order_${Date.now()}`,
+      payment_capture: 1,
       notes
     };
 
-    const order = await razorpay.orders.create(options);
-    
+    const order = await razorpay.orders.create(orderOptions);
+
     res.json({
       success: true,
-      order,
-      message: 'Order created successfully'
+      order
     });
 
   } catch (error) {
-    console.error('[Order Error]', error);
+    console.error('Order creation error:', error);
     res.status(500).json({
       success: false,
       error: error.message || 'Failed to create order'
@@ -80,40 +88,40 @@ app.post('/api/create-order', async (req, res) => {
 });
 
 // Payment Verification
-app.post('/api/verify-payment', (req, res) => {
+app.post('/api/verify', (req, res) => {
+  const { order_id, payment_id, signature } = req.body;
+
+  if (!order_id || !payment_id || !signature) {
+    return res.status(400).json({
+      success: false,
+      error: 'Missing required parameters'
+    });
+  }
+
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-      return res.status(400).json({
-        success: false,
-        error: 'Missing payment verification parameters'
-      });
-    }
-
     const generatedSignature = crypto
       .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
-      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .update(`${order_id}|${payment_id}`)
       .digest('hex');
 
-    const isSignatureValid = generatedSignature === razorpay_signature;
+    const isValid = generatedSignature === signature;
 
-    if (isSignatureValid) {
+    if (isValid) {
       // Payment successful - save to database here
-      res.json({
+      return res.json({
         success: true,
-        paymentId: razorpay_payment_id,
-        orderId: razorpay_order_id,
-        message: 'Payment verified successfully'
-      });
-    } else {
-      res.status(400).json({
-        success: false,
-        error: 'Invalid payment signature'
+        paymentId: payment_id,
+        orderId: order_id
       });
     }
+
+    res.status(400).json({
+      success: false,
+      error: 'Invalid signature'
+    });
+
   } catch (error) {
-    console.error('[Verification Error]', error);
+    console.error('Verification error:', error);
     res.status(500).json({
       success: false,
       error: 'Payment verification failed'
@@ -121,61 +129,22 @@ app.post('/api/verify-payment', (req, res) => {
   }
 });
 
-// Webhook Handler (for production)
-app.post('/api/webhook', express.raw({ type: 'application/json' }), (req, res) => {
-  const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
-  const signature = req.headers['x-razorpay-signature'];
-
-  const expectedSignature = crypto
-    .createHmac('sha256', secret)
-    .update(req.body)
-    .digest('hex');
-
-  if (signature !== expectedSignature) {
-    return res.status(401).json({ status: 'invalid signature' });
-  }
-
-  try {
-    const event = JSON.parse(req.body);
-    console.log('Webhook Event:', event.event);
-    
-    // Handle different webhook events
-    switch (event.event) {
-      case 'payment.captured':
-        // Handle successful payment
-        break;
-      case 'payment.failed':
-        // Handle failed payment
-        break;
-      default:
-        console.log('Unhandled event type:', event.event);
-    }
-
-    res.json({ status: 'received' });
-  } catch (error) {
-    console.error('[Webhook Error]', error);
-    res.status(500).json({ status: 'error' });
-  }
-});
-
-// Serve frontend routes
+// Fallback route for frontend
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Error Handling Middleware
+// Error handling middleware
 app.use((err, req, res, next) => {
-  console.error('[Server Error]', err.stack);
+  console.error(err.stack);
   res.status(500).json({
     success: false,
-    error: 'Internal Server Error'
+    error: 'Internal server error'
   });
 });
 
-// Server Startup
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`Frontend URL: ${process.env.FRONTEND_URL}`);
+  console.log(`Razorpay Key: ${process.env.RAZORPAY_KEY_ID ? 'Configured' : 'Missing'}`);
 });
